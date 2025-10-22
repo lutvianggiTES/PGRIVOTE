@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Voting PGRI Ranting 1 Singgahan</title>
+  <style>
+    * { box-sizing: border-box; font-family: "Poppins", sans-serif; }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      background: linear-gradient(-45deg, #004aad, #00bcd4, #8e24aa, #e91e63);
+      background-size: 400% 400%;
+      animation: gradient 10s ease infinite;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      overflow: hidden;
+    }
+
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .container {
+      width: 90%;
+      max-width: 420px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 35px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+      animation: fadeIn 1s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    img {
+      width: 110px;
+      animation: pulse 3s infinite alternate;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.1); }
+    }
+
+    h2 {
+      margin: 15px 0;
+      font-size: 1.4em;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    input, textarea, button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+
+    input, textarea {
+      background: rgba(255,255,255,0.95);
+      color: #333;
+      outline: none;
+      transition: transform 0.2s;
+    }
+
+    input:focus, textarea:focus {
+      transform: scale(1.02);
+    }
+
+    button {
+      background: linear-gradient(90deg, #0097a7, #512da8);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.4s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    button:hover {
+      background: linear-gradient(90deg, #00796b, #311b92);
+      transform: scale(1.05);
+    }
+
+    .hidden { display: none; }
+
+    .footer { margin-top: 15px; font-size: 12px; opacity: 0.8; }
+
+    /* === Bagian kandidat diperbarui === */
+    .candidate {
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 10px;
+      background: linear-gradient(90deg, #00bcd4, #8e24aa);
+      color: #fff;
+      cursor: pointer;
+      transition: 0.3s;
+      font-weight: 600;
+      box-shadow: 0 0 10px rgba(0,188,212,0.8), 0 0 20px rgba(142,36,170,0.6);
+      text-shadow: 0 0 8px rgba(255,255,255,0.8);
+    }
+
+    .candidate:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(0,255,255,1), 0 0 25px rgba(255,0,255,0.9);
+    }
+
+    .selected {
+      background: linear-gradient(90deg, #ff4081, #512da8);
+      box-shadow: 0 0 25px rgba(255,64,129,1), 0 0 35px rgba(81,45,168,1);
+      text-shadow: 0 0 10px rgba(255,255,255,1);
+    }
+    /* === Akhir perubahan kandidat === */
+  </style>
+</head>
+<body>
+  <!-- Halaman Login -->
+  <div class="container fade" id="loginPage">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Persatuan_Guru_Republik_Indonesia.png/250px-Persatuan_Guru_Republik_Indonesia.png" alt="Logo PGRI">
+    <h2>Login PGRI Ranting 1 Singgahan</h2>
+    <input type="text" id="username" placeholder="Masukkan Username">
+    <input type="password" id="password" placeholder="Masukkan Password">
+    <button onclick="login()">Masuk</button>
+    <div class="footer">© 2025 PGRI Ranting 1 Singgahan</div>
+  </div>
+
+  <!-- Halaman Voting -->
+  <div class="container hidden fade" id="votePage">
+    <h2>Pilih Calon F1 dan F2 Cabang PGRI</h2>
+    <div id="candidates">
+      <div class="candidate" onclick="pilih(this)">Muhammad Najib</div>
+      <div class="candidate" onclick="pilih(this)">Ya'sum Shodiq</div>
+      <div class="candidate" onclick="pilih(this)">Siti Syafiatin</div>
+      <div class="candidate" onclick="pilih(this)">Lutvi Anggi Prayoga</div>
+      <div class="candidate" onclick="pilih(this)">Tulus Widodo</div>
+      <div class="candidate" onclick="pilih(this)">R. Suryati Hendri Lestari</div>
+    </div>
+    <input type="text" id="nama" placeholder="Nama Anda">
+    <textarea id="alasan" placeholder="Tuliskan alasan pilihan Anda..."></textarea>
+    <button onclick="kirimVote()">Kirim Suara</button>
+    <div class="footer">💡 Suara Anda menentukan arah organisasi kita 💪</div>
+  </div>
+
+  <!-- Script EmailJS + Google Sheets -->
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <script>
+    emailjs.init("FW3RtsZy7yX_IshRL");
+    const SERVICE_ID = "service_m30xtga";
+    const TEMPLATE_ID = "template_ruoaezu";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw5OZZA3pFBCoW02s2TNR3RBzRkZ4uW5cM72Xy07PLhhHJMON5D6nkGRWVrY_MHF2H0/exec";
+
+    let pilihan = "";
+
+    function login() {
+      const user = document.getElementById("username").value.trim();
+      const pass = document.getElementById("password").value.trim();
+      if (user === "RANTING1" && pass === "SINGGAHAN") {
+        document.getElementById("loginPage").classList.add("hidden");
+        document.getElementById("votePage").classList.remove("hidden");
+        document.body.style.background = "linear-gradient(-45deg, #512da8, #00bcd4, #00796b, #e91e63)";
+      } else alert("❌ Username atau Password salah!");
+    }
+
+    function pilih(element) {
+      document.querySelectorAll(".candidate").forEach(el => el.classList.remove("selected"));
+      element.classList.add("selected");
+      pilihan = element.innerText;
+    }
+
+    function kirimVote() {
+      const nama = document.getElementById("nama").value.trim();
+      const alasan = document.getElementById("alasan").value.trim();
+      if (!nama || !pilihan) return alert("⚠️ Mohon isi nama dan pilih calon terlebih dahulu!");
+
+      emailjs.send(SERVICE_ID, TEMPLATE_ID, { nama, pilihan, alasan })
+        .then(() => console.log("✅ Email terkirim."))
+        .catch(err => console.error("❌ Gagal kirim email:", err));
+
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nama, pilihan, alasan })
+      });
+
+      alert("✅ Terima kasih, suara Anda telah dikirim!");
+      document.getElementById("nama").value = "";
+      document.getElementById("alasan").value = "";
+      document.querySelectorAll(".candidate").forEach(el => el.classList.remove("selected"));
+      pilihan = "";
+    }
+  </script>
+</body>
+</html>
